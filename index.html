@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat App</title>
+    <style>
+        #messages {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+          background-color: #8dbce0;
+        }
+
+        #message-input {
+            margin-top: 10px;
+
+        }
+    </style>
+</head>
+<body>
+    <div id="messages" style="border-color: blue;"></div>
+    <div id="message-input">
+        <input type="text" id="username" placeholder="Enter username" style="border-color: orange;">
+        <input type="text" id="message" placeholder="Enter message" style="border-color: orange;">
+        <button id="send" style="background-color:lightgoldenrodyellow;">Send</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-database.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyCj8BEYXaTlzloxM11TtzuqYDD0gx3Sp1Y",
+            authDomain: "chat-app-e3138.firebaseapp.com",
+            databaseURL: "https://chat-app-e3138-default-rtdb.firebaseio.com",
+            projectId: "chat-app-e3138",
+            storageBucket: "chat-app-e3138.appspot.com",
+            messagingSenderId: "795438403932",
+            appId: "1:795438403932:web:98a6cdafc4e4197d027199"
+        };
+        firebase.initializeApp(config);
+
+        var database = firebase.database();
+
+        var messagesRef = database.ref('messages');
+
+        document.getElementById('send').addEventListener('click', function() {
+            var usernameInput = document.getElementById('username');
+            var username = usernameInput.value;
+            var messageInput = document.getElementById('message');
+            var message = messageInput.value;
+            if (message !== '') {
+                messagesRef.push().set({
+                    username: username,
+                    message: message
+                });
+                messageInput.value = '';
+            }
+        });
+
+        messagesRef.on('child_added', function(snapshot) {
+            var username = snapshot.val().username;
+            var message = snapshot.val().message;
+            var messageElement = document.createElement('div');
+            messageElement.innerText = username + ': ' + message;
+            document.getElementById('messages').appendChild(messageElement);
+        });
+    </script>
+</body>
+</html>
